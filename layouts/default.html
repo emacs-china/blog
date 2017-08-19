@@ -9,5 +9,8 @@
     <div id="main">
       <%= yield %>
     </div>
+    <% if @item[:author] %>
+      <p>This page was written by <%= @item[:author] %>.</p>
+    <% end %>
   </body>
 </html>
