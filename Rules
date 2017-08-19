@@ -6,11 +6,17 @@ end
 
 compile '/**/*.md' do
   filter :kramdown, auto_ids: false, enable_coderay: false
-  filter :google_code_prettify
+  filter :google_code_prettify_kramdown
   layout '/default.*'
 end
 
-route '/**/*.{html,md}' do
+compile '/**/*.org' do
+  filter :pandoc, args: [{ from: :org, to: :html, wrap: :none }]
+  filter :google_code_prettify_pandoc
+  layout '/default.*'
+end
+
+route '/**/*.{html,md,org}' do
   if item.identifier =~ '/index.*'
     '/index.html'
   else
