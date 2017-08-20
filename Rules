@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-compile '/**/feed.xml' do
+compile '/feed.xml' do
   filter :erb
   write item.identifier.to_s
 end
@@ -15,8 +15,8 @@ compile '/posts/*.md' do
   filter :google_code_prettify_kramdown
   layout '/post.*'
 
-  date = Time.parse(item[:created_at])
-  y, m, d = date.year, date.month, date.day
+  time = attribute_to_time(item[:created_at])
+  y, m, d = time.year, time.month, time.day
   slug = File.basename(item.identifier, ".md")
   write "/#{y}/#{'%02d' % m}/#{'%02d' % d}/#{slug}/index.html"
 end
@@ -26,8 +26,8 @@ compile '/posts/*.org' do
   filter :google_code_prettify_pandoc
   layout '/post.*'
 
-  date = Time.parse(item[:created_at])
-  y, m, d = date.year, date.month, date.day
+  time = attribute_to_time(item[:created_at])
+  y, m, d = time.year, time.month, time.day
   slug = File.basename(item.identifier, ".org")
   write "/#{y}/#{'%02d' % m}/#{'%02d' % d}/#{slug}/index.html"
 end
