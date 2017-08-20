@@ -10,34 +10,30 @@ compile '/**/*.html' do
   layout '/default.*'
 end
 
-compile '/posts/*.md' do
-  filter :kramdown, auto_ids: false, enable_coderay: false
-  filter :google_code_prettify_kramdown
-  layout '/post.*'
-
-  time = attribute_to_time(item[:created_at])
-  y, m, d = time.year, time.month, time.day
-  slug = File.basename(item.identifier, ".md")
-  write "/#{y}/#{'%02d' % m}/#{'%02d' % d}/#{slug}/index.html"
-end
-
-compile '/posts/*.org' do
-  filter :pandoc, args: [{ from: :org, to: :html, wrap: :none }]
-  filter :google_code_prettify_pandoc
-  layout '/post.*'
-
-  time = attribute_to_time(item[:created_at])
-  y, m, d = time.year, time.month, time.day
-  slug = File.basename(item.identifier, ".org")
-  write "/#{y}/#{'%02d' % m}/#{'%02d' % d}/#{slug}/index.html"
-end
-
 route '/**/*.html' do
   if item.identifier =~ '/index.*'
     '/index.html'
   else
     item.identifier.without_ext + '/index.html'
   end
+end
+
+compile '/posts/*.md' do
+  filter :kramdown, auto_ids: false, enable_coderay: false
+  filter :google_code_prettify_kramdown
+  layout '/post.*'
+end
+
+compile '/posts/*.org' do
+  filter :pandoc, args: [{ from: :org, to: :html, wrap: :none }]
+  filter :google_code_prettify_pandoc
+  layout '/post.*'
+end
+
+route '/posts/*.{md,org}' do
+  time = attribute_to_time(item[:created_at])
+  slug = File.basename(item.identifier, ".*")
+  time.strftime("/%Y/%m/%d/") + slug + "/index.html"
 end
 
 compile '/**/*' do

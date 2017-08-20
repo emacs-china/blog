@@ -1,7 +1,7 @@
 <% render '/default.*' do %>
   <div class="post">
     <h1><%= item[:title] %></h1>
-    <p>Posted on <%= item[:created_at] %>, by <%= @item[:author] %></p>
+    <p>Posted on <%= attribute_to_time(item[:created_at]).strftime('%Y.%m.%d') %>, by <%= @item[:author] %></p>
     <%= yield %>
   </div>
 <% end %>
