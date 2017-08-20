@@ -3,6 +3,7 @@ GEM
   specs:
     adsf (1.2.1)
       rack (>= 1.0.0)
+    builder (3.2.3)
     colored (1.2)
     concurrent-ruby (1.0.5)
     cri (2.9.1)
@@ -28,6 +29,7 @@ PLATFORMS
 
 DEPENDENCIES
   adsf
+  builder
   kramdown
   nanoc
   nokogiri

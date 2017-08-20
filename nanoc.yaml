@@ -88,3 +88,6 @@ checks:
     # E.g.:
     #   exclude_files: ['blog/page']
     exclude_files: []
+
+# Extra configuration
+base_url: "https://blog.emacs-china.org"

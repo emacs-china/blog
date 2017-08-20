@@ -1,0 +1,5 @@
+<%= atom_feed \
+:title => "Emacs China Blog", \
+:author_name => "Emacs China", \
+:author_uri => "https://emacs-china.org", \
+:limit => 10 %>
