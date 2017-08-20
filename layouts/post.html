@@ -4,4 +4,5 @@
     <p>Posted on <%= attribute_to_time(item[:created_at]).strftime('%Y.%m.%d') %>, by <%= @item[:author] %></p>
     <%= yield %>
   </div>
+  <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js?lang=lisp"></script>
 <% end %>
