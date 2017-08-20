@@ -9,7 +9,7 @@ title: "Emacs China Blog"
 <ul>
     <% sorted_articles.each do |post| %>
     <li>
-        <%= attribute_to_time(post[:created_at]).strftime('%Y.%m.%d') %> · <%= link_to post[:title], post.path %>
+        <%= attribute_to_time(post[:created_at]).strftime('%Y.%m.%d') %> · <%= link_to(post[:title], relative_path_to(post.path)) %>
     </li>
 </ul>
 
