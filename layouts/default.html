@@ -2,15 +2,18 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>Emacs China Blogs - <%= @item[:title] %></title>
+    <title><%= @item[:title] %></title>
     <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js?lang=lisp"></script>
   </head>
   <body>
-    <div id="main">
+    <div>
+      <ul>
+        <li><a href="/">首页</a></li>
+        <li><a href="/about">关于</a></li>
+      </ul>
+    </div>
+    <div id="content">
       <%= yield %>
     </div>
-    <% if @item[:author] %>
-      <p>This page was written by <%= @item[:author] %>.</p>
-    <% end %>
   </body>
 </html>

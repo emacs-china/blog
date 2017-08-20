@@ -1,22 +1,33 @@
 #!/usr/bin/env ruby
 
 compile '/**/*.html' do
+  filter :erb
   layout '/default.*'
 end
 
-compile '/**/*.md' do
+compile '/posts/*.md' do
   filter :kramdown, auto_ids: false, enable_coderay: false
   filter :google_code_prettify_kramdown
-  layout '/default.*'
+  layout '/post.*'
+
+  date = Time.parse(item[:created_at])
+  y, m, d = date.year, date.month, date.day
+  slug = File.basename(item.identifier, ".md")
+  write "/#{y}/#{'%02d' % m}/#{'%02d' % d}/#{slug}/index.html"
 end
 
-compile '/**/*.org' do
+compile '/posts/*.org' do
   filter :pandoc, args: [{ from: :org, to: :html, wrap: :none }]
   filter :google_code_prettify_pandoc
-  layout '/default.*'
+  layout '/post.*'
+
+  date = Time.parse(item[:created_at])
+  y, m, d = date.year, date.month, date.day
+  slug = File.basename(item.identifier, ".org")
+  write "/#{y}/#{'%02d' % m}/#{'%02d' % d}/#{slug}/index.html"
 end
 
-route '/**/*.{html,md,org}' do
+route '/**/*.html' do
   if item.identifier =~ '/index.*'
     '/index.html'
   else

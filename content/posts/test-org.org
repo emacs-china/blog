@@ -1,7 +1,8 @@
 ---
 title: "Test Org modes file"
 author: "Chunyang Xu"
-date: "2017-08-20T01:05:28+08:00"
+created_at: "2017-08-20T01:05:28+08:00"
+kind: article
 ---
 
 ** 代码高亮

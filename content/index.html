@@ -1,5 +1,11 @@
 ---
-title: Home
+title: "Emacs China Blog"
 ---
 
 <h1>Emacs China Blogs</h1>
+
+<% sorted_articles.each do |post| %>
+  <li>
+    <%= post[:created_at] %> · <%= link_to post[:title], post.path %>
+  </li>
+<% end %>

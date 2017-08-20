@@ -1,7 +1,8 @@
 ---
 title: "Sort Sexps"
 author: "Chunyang Xu"
-date: "2017-08-19T20:44:23+08:00"
+created_at: "2017-08-19T20:44:23+08:00"
+kind: article
 ---
 
 最近碰到一个需要排序代码的情况，在给 Org Babel 添加了很多语言之后，顺序完全没规律，看起来不方便，给语言按照字母表排个序就好了：
