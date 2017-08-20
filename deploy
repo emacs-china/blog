@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+#
+# Copyright (C) 2017 Chunyang Xu
+#
+# deploy - Deploy to GitHub Page
+
+set -o errexit
+
+rm -rf output
+bundle exec nanoc
+cd output
+
+git init
+git add .
+git commit -m "Deploy to Github Pages"
+git push -f https://github.com/emacs-china/blog.git master:gh-pages
