@@ -1,8 +1,21 @@
 <% render '/default.*' do %>
-  <div class="post">
+<div class="post">
     <h1><%= item[:title] %></h1>
     <p>Posted on <%= attribute_to_time(item[:created_at]).strftime('%Y.%m.%d') %>, by <%= @item[:author] %></p>
     <%= yield %>
-  </div>
-  <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js?lang=lisp"></script>
+</div>
+
+<script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js?lang=lisp"></script>
+
+<div id='discourse-comments'></div>
+<script type="text/javascript">
+ DiscourseEmbed = { discourseUrl: 'https://emacs-china.org/',
+                    discourseEmbedUrl: '<%= @config[:base_url] + item.path %>' };
+
+ (function() {
+     var d = document.createElement('script'); d.type = 'text/javascript'; d.async = true;
+     d.src = DiscourseEmbed.discourseUrl + 'javascripts/embed.js';
+     (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(d);
+ })();
+</script>
 <% end %>

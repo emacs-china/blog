@@ -21,7 +21,9 @@ bundle exec nanoc view
 - [x] 代码高亮，通过 Google Code Prettify（因为它的 Emacs Lisp 支持比较好）
 - [x] RSS
 - [x] 部署到 GitHub Page
-- [ ] 添加评论系统，通过 Emacs China 论坛（Discourse）
+- [x] 添加评论系统，通过 Emacs China 论坛（Discourse）
+- [ ] 讨论与 https://github.com/emacs-china/emacsist 以及 https://github.com/emacs-china/emacs-china.github.io 的关系
+- [ ] 使用独立的域名 blog.emacs-china.org ?
 - [ ] ...
 
 ## Contributing
