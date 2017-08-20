@@ -20,7 +20,7 @@ bundle exec nanoc view
 - [x] Org mode
 - [x] 代码高亮，通过 Google Code Prettify（因为它的 Emacs Lisp 支持比较好）
 - [x] RSS
-- [ ] 部署到 GitHub Page
+- [x] 部署到 GitHub Page
 - [ ] 添加评论系统，通过 Emacs China 论坛（Discourse）
 - [ ] ...
 
