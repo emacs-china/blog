@@ -6,8 +6,11 @@ title: "Emacs China Blog"
 
 <p>尝试搭建一个类似 <a href="http://emacser.com/">Emacs中文网</a> 的多人博客。</p>
 
-<% sorted_articles.each do |post| %>
-  <li>
-    <%= attribute_to_time(post[:created_at]).strftime('%Y.%m.%d') %> · <%= link_to post[:title], post.path %>
-  </li>
+<ul>
+    <% sorted_articles.each do |post| %>
+    <li>
+        <%= attribute_to_time(post[:created_at]).strftime('%Y.%m.%d') %> · <%= link_to post[:title], post.path %>
+    </li>
+</ul>
+
 <% end %>
