@@ -38,3 +38,27 @@ module CodePrettify
     end
   end
 end
+
+#+TITLE: A very cool title
+#+DATE: <2017-08-21 Mon>
+#+AUTHOR: A very cool Dog
+#
+# (info "(org) In-buffer settings")
+def parse_org_in_buffer_settings(file)
+  title, author, created_at = nil, nil, nil
+  File.open(file) do |f|
+    f.each_line do |l|
+      if l =~ /^#\+TITLE:(.*)$/i
+        title = $1.strip
+      elsif l =~ /^#\+AUTHOR:(.*)$/i
+        author = $1.strip
+      elsif l =~ /^#\+DATE:(.*)$/i
+        created_at = $1.strip
+      end
+      if title && author && created_at
+        break
+      end
+    end
+  end
+  [title, author, created_at]
+end

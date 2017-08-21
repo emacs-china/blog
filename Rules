@@ -1,5 +1,16 @@
 #!/usr/bin/env ruby
 
+preprocess do
+  @items.each do |item|
+    if item.identifier =~ '/posts/*.md'
+      item[:kind] = "article"
+    elsif item.identifier =~ '/posts/*.org'
+      item[:kind] = "article"
+      item[:title], item[:author], item[:created_at] = parse_org_in_buffer_settings('./content' + item.identifier)
+    end
+  end
+end
+
 compile '/feed.xml' do
   filter :erb
   write item.identifier.to_s
@@ -32,6 +43,7 @@ end
 
 route '/posts/*.{md,org}' do
   time = attribute_to_time(item[:created_at])
+  puts "===> foo" unless time
   slug = File.basename(item.identifier, ".*")
   time.strftime("/%Y/%m/%d/") + slug + "/index.html"
 end

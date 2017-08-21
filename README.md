@@ -14,6 +14,30 @@ bundle exec nanoc view
 
 然后访问 http://localhost:3000/ 预览结果。
 
+## 文章的格式
+
+### Markdown
+
+~~~markdown
+---
+title: 标题
+author: 作者
+created_at: 2017-08-21
+---
+
+文章内容 in Markdown
+~~~
+
+### Org mode
+
+~~~org
+#+TITLE: 标题
+#+AUTHOR: 作者
+#+DATE: <2017-08-21 Mon>
+
+文章内容 in Org mode
+~~~
+
 ## TODO
 
 - [x] Markdown
