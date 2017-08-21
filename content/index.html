@@ -11,6 +11,5 @@ title: "Emacs China Blog"
     <li>
         <%= attribute_to_time(post[:created_at]).strftime('%Y.%m.%d') %> · <%= link_to(post[:title], relative_path_to(post.path)) %>
     </li>
+    <% end %>
 </ul>
-
-<% end %>
