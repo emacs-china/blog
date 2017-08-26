@@ -43,9 +43,12 @@ end
 
 route '/posts/*.{md,org}' do
   time = attribute_to_time(item[:created_at])
-  puts "===> foo" unless time
   slug = File.basename(item.identifier, ".*")
   time.strftime("/%Y/%m/%d/") + slug + "/index.html"
+end
+
+compile '/posts/*.png' do
+  write "/" + File.basename(item.identifier.to_s)
 end
 
 compile '/**/*' do
