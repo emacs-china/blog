@@ -4,9 +4,9 @@
 
 ~C-u M-!~ (~shell-command~) 会提示输入一个 Shell 命令然后插入其输出，默认的提示符没有反映出这一特性，我觉得在提示符中提示下会更友好：
 
-[[file:/informative-prompt-shell-command.png]]
+[[file:../../../../informative-prompt-shell-command.png]]
 
-[[file:/informative-prompt-shell-command-on-region.png]]
+[[file:../../../../informative-prompt-shell-command-on-region.png]]
 
 为此我给 Emacs 提交了一个补丁，可惜的是并没有被接受，所以我在自己的配置中定义了一个 Minor Mode 来实现它：
 
