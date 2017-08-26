@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:base="https://emacs-china.github.io/blog/">
+  <id>https://emacs-china.github.io/blog/</id>
+  <title>Emacs China Blog</title>
+  <updated>2017-08-26T08:18:00Z</updated>
+  <link rel="alternate" href="https://emacs-china.github.io/blog/"/>
+  <link rel="self" href="https://emacs-china.github.io/blog/feed.xml"/>
+  <author>
+    <name>Emacs China</name>
+    <uri>https://emacs-china.org</uri>
+  </author>
+  <entry>
+    <id>tag:emacs-china.github.io,2017-08-26:/blog/2017/08/26/informative-prompt/</id>
+    <title type="html">友好一点的 shell-command 提示符</title>
+    <published>2017-08-26T08:18:00Z</published>
+    <updated>2017-08-26T08:18:00Z</updated>
+    <link rel="alternate" href="https://emacs-china.github.io/blog/2017/08/26/informative-prompt/"/>
+    <content type="html">&lt;!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd"&gt;
+&lt;html&gt;&lt;body&gt;
+&lt;p&gt;&lt;code&gt;C-u M-!&lt;/code&gt; (&lt;code&gt;shell-command&lt;/code&gt;) 会提示输入一个 Shell 命令然后插入其输出，默认的提示符没有反映出这一特性，我觉得在提示符中提示下会更友好：&lt;/p&gt;
+&lt;p&gt;&lt;img src="../../../../informative-prompt-shell-command.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="../../../../informative-prompt-shell-command-on-region.png"&gt;&lt;/p&gt;
+&lt;p&gt;为此我给 Emacs 提交了一个补丁，可惜的是并没有被接受，所以我在自己的配置中定义了一个 Minor Mode 来实现它：&lt;/p&gt;
+&lt;pre class="prettyprint"&gt;&lt;code class="language-el"&gt;(defun prompt-watcher ()
+  (let ((prompt-fn
+         (lambda (prompt)
+           (let ((inhibit-read-only t)
+                 (props (text-properties-at (point-min))))
+             (erase-buffer)
+             (insert prompt)
+             (set-text-properties (point-min) (point-max) props)))))
+    (cond ((eq this-command 'shell-command-on-region)
+           (and (equal (minibuffer-prompt) "Shell command on region: ")
+                current-prefix-arg
+                (funcall prompt-fn "Shell command on region and replace: ")))
+          ((eq this-command 'shell-command)
+           (and (equal (minibuffer-prompt) "Shell command: ")
+                current-prefix-arg
+                (funcall prompt-fn "Shell command and insert output: ")))
+          ((eq this-command 'eshell-command)
+           (and (equal (minibuffer-prompt) "Emacs shell command: ")
+                current-prefix-arg
+                (funcall prompt-fn "Emacs shell command and insert output: ")))
+          ((eq this-command 'async-shell-command)
+           (and (equal (minibuffer-prompt) "Async shell command: ")
+                current-prefix-arg
+                (funcall prompt-fn "Async shell command and insert output: "))))))
+
+(define-minor-mode prompt-watcher-mode
+  "Watch the minibuffer prompt and customize if asking."
+  :global t
+  (if prompt-watcher-mode
+      (add-hook 'minibuffer-setup-hook #'prompt-watcher)
+    (remove-hook 'minibuffer-setup-hook #'prompt-watcher)))
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/body&gt;&lt;/html&gt;
+</content>
+  </entry>
+  <entry>
+    <id>tag:emacs-china.github.io,2017-08-19:/blog/2017/08/19/sort-sexps/</id>
+    <title type="html">Sort Sexps</title>
+    <published>2017-08-19T12:44:23Z</published>
+    <updated>2017-08-19T12:44:23Z</updated>
+    <link rel="alternate" href="https://emacs-china.github.io/blog/2017/08/19/sort-sexps/"/>
+    <content type="html">&lt;!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd"&gt;
+&lt;html&gt;&lt;body&gt;
+&lt;p&gt;最近碰到一个需要排序代码的情况，在给 Org Babel 添加了很多语言之后，顺序完全没规律，看起来不方便，给语言按照字母表排个序就好了：&lt;/p&gt;
+
+&lt;pre class="prettyprint"&gt;&lt;code class="language-el"&gt;(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '((emacs-lisp . t)
+   (sh         . t)
+   (lisp       . t)
+   (org        . t)
+   (perl       . t)
+   (R          . t)
+   (ruby       . t)
+   (python     . t)
+   (scheme     . t)
+   (C          . t)
+   (ditaa      . t)
+   (latex      . t)
+   (awk        . t)
+   (lua        . t)))
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;这个格式已经很整齐了，稍微再整理下用 &lt;code&gt;M-x sort-lines&lt;/code&gt; 或 &lt;code&gt;C-u M-| sort&lt;/code&gt; 就能达到目的，但是如果排序的单元不以行为单位，比如：&lt;/p&gt;
+
+&lt;pre class="prettyprint"&gt;&lt;code class="language-el"&gt;((emacs-lisp . t) (sh . t) (lisp . t) (org . t) (perl . t) (ruby . t))
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;这种方法无能为力了。受到网上一些讨论的启发，用 &lt;code&gt;sort-subr&lt;/code&gt; 结合 Emacs Syntax Table 能解决问题：&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+&lt;code&gt;sort-subr&lt;/code&gt; 函数是排序 Buffer 的内容的底层函数，调用者可以设置排序的元素的范围和如何比较它们&lt;/li&gt;
+  &lt;li&gt;
+&lt;code&gt;(skip-syntax-forward "-.&amp;gt;")&lt;/code&gt; 分别跳过 Sexps 之间的空白字符(&lt;code&gt;-&lt;/code&gt;)、标点符号(&lt;code&gt;.&lt;/code&gt;)和换行符号(&lt;code&gt;&amp;gt;&lt;/code&gt;)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre class="prettyprint"&gt;&lt;code class="language-el"&gt;(defun sort-sexps (reverse beg end)
+  "Sort sexps in the Region."
+  (interactive "*P\nr")
+  (save-restriction
+    (narrow-to-region beg end)
+    (goto-char (point-min))
+    (let ((nextrecfun (lambda () (skip-syntax-forward "-.&amp;gt;")))
+          (endrecfun  #'forward-sexp))
+      (sort-subr reverse nextrecfun endrecfun))))
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Emacs 把 Lisp 的 Sexp 的概念扩展到了其他的语言&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Basically, a sexp is either a balanced parenthetical grouping, a string, or a
+symbol&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;比方说同一个段文字 &lt;code&gt;3 + 2 + 1&lt;/code&gt;，在下面的 C 代码中，其中 &lt;code&gt;3&lt;/code&gt;, &lt;code&gt;2&lt;/code&gt; &lt;code&gt;1&lt;/code&gt; 分别都是 Sexp，而剩余的空格和操作符号 &lt;code&gt;+&lt;/code&gt; 不是，从而导致了 &lt;code&gt;M-x sort-sexps&lt;/code&gt; 只排序 &lt;code&gt;3&lt;/code&gt;, &lt;code&gt;2&lt;/code&gt;, &lt;code&gt;1&lt;/code&gt;&lt;/p&gt;
+
+&lt;pre class="prettyprint"&gt;&lt;code class="language-c"&gt;/* -*- mode: c; -*- */
+int x = 3 + 2 + 1;
+/* M-x sort-sexps */
+int x = 1 + 2 + 3;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;而在 Emacs Lisp 代码中，&lt;code&gt;3&lt;/code&gt;, &lt;code&gt;+&lt;/code&gt;, &lt;code&gt;2&lt;/code&gt;, &lt;code&gt;+&lt;/code&gt;, &lt;code&gt;1&lt;/code&gt; 都是 Sexp，所以它们都会被排序。&lt;/p&gt;
+
+&lt;pre class="prettyprint"&gt;&lt;code class="language-el"&gt;;; -*- mode: emacs-lisp; -*-
+(setq x '(3 + 2 + 1))
+;; M-x sort-sexps
+(setq x '(+ + 1 2 3))
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;排序一个 C 字符串数组也能得到预期的结果：&lt;/p&gt;
+
+&lt;pre class="prettyprint"&gt;&lt;code class="language-c"&gt;/* -*- mode: c; -*- */
+char *characters[] = { "Tom", "Jerry", "Nibbles", "Quacker" };
+/* M-x sort-sexps */
+char *characters[] = { "Jerry", "Nibbles", "Quacker", "Tom" };
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;sort-sexps&lt;/code&gt; 用的是 &lt;code&gt;sort-subr&lt;/code&gt; 默认的比较方法（即用 &lt;code&gt;string&amp;lt;&lt;/code&gt; 比较整个 Record），通过设置 &lt;code&gt;sort-subr&lt;/code&gt; 的参数可以做调整。比如按照数字的大小&lt;/p&gt;
+
+&lt;pre class="prettyprint"&gt;&lt;code class="language-el"&gt;(defun sort-numbers (reverse beg end)
+  "Sort numbers in the Region."
+  (interactive "*P\nr")
+  (save-restriction
+    (narrow-to-region beg end)
+    (goto-char (point-min))
+    (let ((nextrecfun (lambda () (skip-syntax-forward "-.&amp;gt;")))
+          (endrecfun  #'forward-sexp)
+          (startkeyfun (lambda ()
+                         (or (number-at-point)
+                             (user-error "Sexp doesn't looks like a number")))))
+      (sort-subr reverse nextrecfun endrecfun startkeyfun))))
+
+
+'(3 1 4 10 2)
+
+;; sort-sexps
+'(1 10 2 3 4)
+
+;; sort-numbers
+'(1 2 3 4 10)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/body&gt;&lt;/html&gt;
+</content>
+  </entry>
+</feed>
+

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>友好一点的 shell-command 提示符</title>
+        <link rel="icon" type="image/png" href="https://emacs-china.org/uploads/default/original/1X/477ac7ed14175dfd2deb65ee3c3d83d18a8906b8.ico">
+        <link href=../../../../feed.xml rel="alternate" type="application/atom+xml">
+    </head>
+    <body>
+        <div>
+            <a href="../../../../">首页</a>
+        </div>
+        <div id="content">
+            
+<div class="post">
+    <h1>友好一点的 shell-command 提示符</h1>
+    <p>Posted on 2017.08.26, by Chunyang Xu</p>
+    <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html><body>
+<p><code>C-u M-!</code> (<code>shell-command</code>) 会提示输入一个 Shell 命令然后插入其输出，默认的提示符没有反映出这一特性，我觉得在提示符中提示下会更友好：</p>
+<p><img src="../../../../informative-prompt-shell-command.png"></p>
+<p><img src="../../../../informative-prompt-shell-command-on-region.png"></p>
+<p>为此我给 Emacs 提交了一个补丁，可惜的是并没有被接受，所以我在自己的配置中定义了一个 Minor Mode 来实现它：</p>
+<pre class="prettyprint"><code class="language-el">(defun prompt-watcher ()
+  (let ((prompt-fn
+         (lambda (prompt)
+           (let ((inhibit-read-only t)
+                 (props (text-properties-at (point-min))))
+             (erase-buffer)
+             (insert prompt)
+             (set-text-properties (point-min) (point-max) props)))))
+    (cond ((eq this-command 'shell-command-on-region)
+           (and (equal (minibuffer-prompt) "Shell command on region: ")
+                current-prefix-arg
+                (funcall prompt-fn "Shell command on region and replace: ")))
+          ((eq this-command 'shell-command)
+           (and (equal (minibuffer-prompt) "Shell command: ")
+                current-prefix-arg
+                (funcall prompt-fn "Shell command and insert output: ")))
+          ((eq this-command 'eshell-command)
+           (and (equal (minibuffer-prompt) "Emacs shell command: ")
+                current-prefix-arg
+                (funcall prompt-fn "Emacs shell command and insert output: ")))
+          ((eq this-command 'async-shell-command)
+           (and (equal (minibuffer-prompt) "Async shell command: ")
+                current-prefix-arg
+                (funcall prompt-fn "Async shell command and insert output: "))))))
+
+(define-minor-mode prompt-watcher-mode
+  "Watch the minibuffer prompt and customize if asking."
+  :global t
+  (if prompt-watcher-mode
+      (add-hook 'minibuffer-setup-hook #'prompt-watcher)
+    (remove-hook 'minibuffer-setup-hook #'prompt-watcher)))
+</code></pre>
+</body></html>
+
+</div>
+
+<script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js?lang=lisp"></script>
+
+<div id='discourse-comments'></div>
+<script type="text/javascript">
+ DiscourseEmbed = { discourseUrl: 'https://emacs-china.org/',
+                    discourseEmbedUrl: 'https://emacs-china.github.io/blog/2017/08/26/informative-prompt/' };
+
+ (function() {
+     var d = document.createElement('script'); d.type = 'text/javascript'; d.async = true;
+     d.src = DiscourseEmbed.discourseUrl + 'javascripts/embed.js';
+     (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(d);
+ })();
+</script>
+
+        </div>
+    </body>
+</html>
+
